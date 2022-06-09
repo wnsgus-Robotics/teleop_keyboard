@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
-
+#include "velocity_profile.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <termios.h>
@@ -92,10 +92,12 @@ private:
   double x,y,z,th;
   char key;
   double control_hz;
+  double vacc;
+  double wacc;
   
   void getParam();
   int getch();
-
+  VelocityProfile *profile;
   void t1Callback(const ros::TimerEvent&);
   void t2Callback(const ros::TimerEvent&);
   geometry_msgs::Twist twist;

@@ -13,10 +13,10 @@ TeleopKeyboard::~TeleopKeyboard()
 void TeleopKeyboard::init()
 {
   getParam();
-  ROS_INFO("[%s] init",ros::this_node::getName().c_str());
   pub = nh.advertise<geometry_msgs::Twist>(topic_name, 1);
   timer1 = nh.createTimer(ros::Duration(0.1), &TeleopKeyboard::t1Callback,this);
   timer2 = nh.createTimer(ros::Duration(1/control_hz), &TeleopKeyboard::t2Callback,this);
+  profile = new VelocityProfile(vacc,wacc);
 }
 
 void TeleopKeyboard::getParam()
@@ -26,11 +26,12 @@ void TeleopKeyboard::getParam()
   y = 0;
   z = 0;
   th = 0;
-  pnh.param("topic_name",topic_name,std::string("cmd_vel"));
-  pnh.param("speed",speed,0.1);
-  pnh.param("turn",turn,0.25);
-  pnh.param("control_hz",control_hz,10.0);
-
+  pnh.param("topic_name",this->topic_name,std::string("cmd_vel"));
+  pnh.param("speed",this->speed,0.1);
+  pnh.param("turn",this->turn,0.25);
+  pnh.param("vacc",this->vacc,0.5);
+  pnh.param("wacc",this->wacc,0.5);
+  pnh.param("control_hz",this->control_hz,10.0);
 }
 int TeleopKeyboard::getch()
 {
@@ -120,13 +121,13 @@ void TeleopKeyboard::t1Callback(const ros::TimerEvent&)
 void TeleopKeyboard::t2Callback(const ros::TimerEvent&)
 {
   // Publish it and resolve any remaining callbacks
-  pub.publish(twist);
+  pub.publish(profile->calc(twist));
 }
 
 int main(int argc, char** argv)
 {
   // Init ROS node
-  ros::init(argc, argv, "teleop_twist_keyboard");
+  ros::init(argc, argv, "teleop");
   ROS_INFO("[%s] start node",ros::this_node::getName().c_str());
   TeleopKeyboard x;
   ros::MultiThreadedSpinner spinner(2);
