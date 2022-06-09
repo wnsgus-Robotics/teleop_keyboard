@@ -1,6 +1,6 @@
 #include "teleop_keyboard.h"
 
-TeleopKeyboard::TeleopKeyboard()
+TeleopKeyboard::TeleopKeyboard():pnh("~")
 {
   init();
 }
