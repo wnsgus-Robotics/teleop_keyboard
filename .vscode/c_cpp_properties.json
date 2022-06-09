@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "cjh",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/cjh/**",
+                "/home/cjh/workspace/ros1_ws/src/semantic_navigation/semantic_autonomous_navigation/san_action_executor/include/**",
+                "/home/cjh/workspace/ros1_ws/devel/include/**",
+                "/opt/ros/noetic/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang-10",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,134 @@
+#include "teleop_keyboard.h"
+
+TeleopKeyboard::TeleopKeyboard()
+{
+  init();
+}
+
+TeleopKeyboard::~TeleopKeyboard()
+{
+  
+}
+
+void TeleopKeyboard::init()
+{
+  getParam();
+  ROS_INFO("[%s] init",ros::this_node::getName().c_str());
+  pub = nh.advertise<geometry_msgs::Twist>(topic_name, 1);
+  timer1 = nh.createTimer(ros::Duration(0.1), &TeleopKeyboard::t1Callback,this);
+  timer2 = nh.createTimer(ros::Duration(1/control_hz), &TeleopKeyboard::t2Callback,this);
+}
+
+void TeleopKeyboard::getParam()
+{ 
+  key = ' ';
+  x = 0;
+  y = 0;
+  z = 0;
+  th = 0;
+  pnh.param("topic_name",topic_name,std::string("cmd_vel"));
+  pnh.param("speed",speed,0.1);
+  pnh.param("turn",turn,0.25);
+  pnh.param("control_hz",control_hz,10.0);
+
+}
+int TeleopKeyboard::getch()
+{
+  int ch;
+  struct termios oldt;
+  struct termios newt;
+
+  // Store old settings, and copy to new settings
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+
+  // Make required changes and apply the settings
+  newt.c_lflag &= ~(ICANON | ECHO);
+  newt.c_iflag |= IGNBRK;
+  newt.c_iflag &= ~(INLCR | ICRNL | IXON | IXOFF);
+  newt.c_lflag &= ~(ICANON | ECHO | ECHOK | ECHOE | ECHONL | ISIG | IEXTEN);
+  newt.c_cc[VMIN] = 1;
+  newt.c_cc[VTIME] = 0;
+  tcsetattr(fileno(stdin), TCSANOW, &newt);
+
+  // Get the current character
+  ch = getchar();
+
+  // Reapply old settings
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+
+  return ch;
+}
+
+void TeleopKeyboard::t1Callback(const ros::TimerEvent&)
+{
+  printf("%s", msg);
+  printf("\rCurrent: speed %f\tturn %f | Awaiting command...\r", speed, turn);
+  // Get the pressed key
+  key = getch();
+
+  // If the key corresponds to a key in moveBindings
+  if (moveBindings.count(key) == 1)
+  {
+    // Grab the direction data
+    x = moveBindings[key][0];
+    y = moveBindings[key][1];
+    z = moveBindings[key][2];
+    th = moveBindings[key][3];
+
+    printf("\rCurrent: speed %f\tturn %f | Last command: %c   ", speed, turn, key);
+  }
+
+  // Otherwise if it corresponds to a key in speedBindings
+  else if (speedBindings.count(key) == 1)
+  {
+    // Grab the speed data
+    speed = speed * speedBindings[key][0];
+    turn = turn * speedBindings[key][1];
+
+    printf("\rCurrent: speed %f\tturn %f | Last command: %c   ", speed, turn, key);
+  }
+
+  // Otherwise, set the robot to stop
+  else
+  {
+    x = 0;
+    y = 0;
+    z = 0;
+    th = 0;
+
+    // If ctrl-C (^C) was pressed, terminate the program
+    if (key == '\x03')
+    {
+      printf("\n\n                 .     .\n              .  |\\-^-/|  .    \n             /| } O.=.O { |\\\n\n                 CH3EERS\n\n");
+      ros::shutdown();
+    }
+
+    printf("\rCurrent: speed %f\tturn %f | Invalid command! %c", speed, turn, key);
+  }
+
+  // Update the Twist message
+  twist.linear.x = x * speed;
+  twist.linear.y = y * speed;
+  twist.linear.z = z * speed;
+
+  twist.angular.x = 0;
+  twist.angular.y = 0;
+  twist.angular.z = th * turn;
+}
+  
+void TeleopKeyboard::t2Callback(const ros::TimerEvent&)
+{
+  // Publish it and resolve any remaining callbacks
+  pub.publish(twist);
+}
+
+int main(int argc, char** argv)
+{
+  // Init ROS node
+  ros::init(argc, argv, "teleop_twist_keyboard");
+  ROS_INFO("[%s] start node",ros::this_node::getName().c_str());
+  TeleopKeyboard x;
+  ros::MultiThreadedSpinner spinner(2);
+  spinner.spin();
+}
