@@ -96,6 +96,7 @@ private:
   double control_hz;
   double vacc;
   double wacc;
+  bool use_mux;
   
   void getParam();
   int getch();

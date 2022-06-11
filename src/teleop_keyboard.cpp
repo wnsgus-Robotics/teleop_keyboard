@@ -7,7 +7,8 @@ TeleopKeyboard::TeleopKeyboard():pnh("~")
 
 TeleopKeyboard::~TeleopKeyboard()
 {
-  
+  delete profile;
+  delete mux;
 }
 
 void TeleopKeyboard::init()
@@ -17,7 +18,8 @@ void TeleopKeyboard::init()
   timer1 = nh.createTimer(ros::Duration(0.1), &TeleopKeyboard::t1Callback,this);
   timer2 = nh.createTimer(ros::Duration(1/control_hz), &TeleopKeyboard::t2Callback,this);
   profile = new VelocityProfile(vacc,wacc);
-  mux = new TwistMux(topic_name,sub_topic_name);
+  if(use_mux)
+    mux = new TwistMux(topic_name,sub_topic_name);
 }
 
 void TeleopKeyboard::getParam()
@@ -29,6 +31,7 @@ void TeleopKeyboard::getParam()
   th = 0;
   pnh.param("topic_name",this->topic_name,std::string("joy_vel"));
   pnh.param("sub_topic_name",this->sub_topic_name,std::string("nav_vel"));
+  pnh.param("mux",this->use_mux,false);
   pnh.param("speed",this->speed,0.1);
   pnh.param("turn",this->turn,0.25);
   pnh.param("vacc",this->vacc,0.5);
@@ -71,10 +74,13 @@ void TeleopKeyboard::t1Callback(const ros::TimerEvent&)
   key = getch();
   
   // If the key corresponds to a key in moveBindings
-  if(key == 'a' || key == 'A')
-    mux->select(sub_topic_name);
-  else 
-    mux->select(topic_name);
+  if(use_mux)
+  {
+    if(key == 'a' || key == 'A')
+      mux->select(sub_topic_name);
+    else 
+      mux->select(topic_name);
+  }
 
   if (moveBindings.count(key) == 1)
   {
@@ -128,11 +134,7 @@ void TeleopKeyboard::t1Callback(const ros::TimerEvent&)
 void TeleopKeyboard::t2Callback(const ros::TimerEvent&)
 {
   // Publish it and resolve any remaining callbacks
-  static geometry_msgs::Twist last_vel;
-  geometry_msgs::Twist currnt_vel = profile->calc(twist);
-  if(last_vel.linear.x + last_vel.angular.z != 0)
-    pub.publish(currnt_vel);
-  last_vel = currnt_vel;
+  pub.publish(profile->calc(twist));
 }
 
 int main(int argc, char** argv)
