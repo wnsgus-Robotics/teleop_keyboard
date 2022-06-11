@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <termios.h>
-
 #include <map>
 
 // Map for movement keys
@@ -86,6 +85,7 @@ private:
   ros::Timer timer2;
 
   std::string topic_name;
+  std::string navigation_topic_name;
   
   double speed; // Linear velocity (m/s)
   double turn; // Angular velocity (rad/s)

@@ -121,7 +121,11 @@ void TeleopKeyboard::t1Callback(const ros::TimerEvent&)
 void TeleopKeyboard::t2Callback(const ros::TimerEvent&)
 {
   // Publish it and resolve any remaining callbacks
-  pub.publish(profile->calc(twist));
+  static geometry_msgs::Twist last_vel;
+  geometry_msgs::Twist currnt_vel = profile->calc(twist);
+  if(last_vel.linear.x + last_vel.angular.z != 0)
+    pub.publish(currnt_vel);
+  last_vel = currnt_vel;
 }
 
 int main(int argc, char** argv)
