@@ -17,6 +17,7 @@ void TeleopKeyboard::init()
   timer1 = nh.createTimer(ros::Duration(0.1), &TeleopKeyboard::t1Callback,this);
   timer2 = nh.createTimer(ros::Duration(1/control_hz), &TeleopKeyboard::t2Callback,this);
   profile = new VelocityProfile(vacc,wacc);
+  mux = new TwistMux(topic_name,sub_topic_name);
 }
 
 void TeleopKeyboard::getParam()
@@ -26,7 +27,8 @@ void TeleopKeyboard::getParam()
   y = 0;
   z = 0;
   th = 0;
-  pnh.param("topic_name",this->topic_name,std::string("cmd_vel"));
+  pnh.param("topic_name",this->topic_name,std::string("joy_vel"));
+  pnh.param("sub_topic_name",this->sub_topic_name,std::string("nav_vel"));
   pnh.param("speed",this->speed,0.1);
   pnh.param("turn",this->turn,0.25);
   pnh.param("vacc",this->vacc,0.5);
@@ -67,8 +69,13 @@ void TeleopKeyboard::t1Callback(const ros::TimerEvent&)
   printf("\rCurrent: speed %f\tturn %f | Awaiting command...\r", speed, turn);
   // Get the pressed key
   key = getch();
-
+  
   // If the key corresponds to a key in moveBindings
+  if(key == 'a' || key == 'A')
+    mux->select(sub_topic_name);
+  else 
+    mux->select(topic_name);
+
   if (moveBindings.count(key) == 1)
   {
     // Grab the direction data

@@ -13,7 +13,7 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(teleop_keyboard src/teleop_keyboard.cpp src/velocity_profile.cpp)
+add_executable(teleop_keyboard src/teleop_keyboard.cpp src/velocity_profile.cpp src/twist_mux.cpp)
 target_link_libraries(teleop_keyboard ${catkin_LIBRARIES})
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")

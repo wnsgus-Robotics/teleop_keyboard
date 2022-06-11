@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include "velocity_profile.h"
+#include "twist_mux.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <termios.h>
@@ -63,6 +64,7 @@ For Holonomic mode (strafing), hold down the shift key:
 
 t : up (+z)
 b : down (-z)
+a : auto run
 
 anything else : stop
 
@@ -85,7 +87,7 @@ private:
   ros::Timer timer2;
 
   std::string topic_name;
-  std::string navigation_topic_name;
+  std::string sub_topic_name;
   
   double speed; // Linear velocity (m/s)
   double turn; // Angular velocity (rad/s)
@@ -98,6 +100,8 @@ private:
   void getParam();
   int getch();
   VelocityProfile *profile;
+  TwistMux *mux;
+
   void t1Callback(const ros::TimerEvent&);
   void t2Callback(const ros::TimerEvent&);
   geometry_msgs::Twist twist;
