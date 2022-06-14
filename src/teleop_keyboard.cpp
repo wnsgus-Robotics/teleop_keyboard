@@ -80,7 +80,7 @@ void TeleopKeyboard::t1Callback(const ros::TimerEvent&)
   {
     if(key == 'a' || key == 'A')
       mux->select(sub_topic_name);
-    else if(key == '1' || key == '2' || key == '3' || key == '4')
+    else if(key == '1' || key == '2' || key == '3' || key == '4' || key == '5')
       ;
     else 
       mux->select(topic_name);

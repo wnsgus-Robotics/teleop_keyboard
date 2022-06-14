@@ -78,4 +78,5 @@ void InteractionButton::in(char key)
     cancelMovebase(key);
     elevatorChoose(key);
     doorSatae(key);
+    sendTask(key);
 }

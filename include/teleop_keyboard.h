@@ -67,6 +67,7 @@ For Holonomic mode (strafing), hold down the shift key:
 2 : elevator 2
 3 : door is open
 4 : cancel action
+5 : set task
 
 t : up (+z)
 b : down (-z)
