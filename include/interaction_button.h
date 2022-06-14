@@ -20,6 +20,7 @@ private:
     ros::Publisher cancel_publisher;
     ros::Publisher elevator_door_publisher;
     ros::Publisher opened_elevator_publisher;
+    ros::Publisher task_publisher;
 
 
 public:
@@ -31,6 +32,8 @@ public:
     bool cancelMovebase(char key);
     bool doorSatae(char key);
     bool elevatorChoose(char key);
+    bool sendTask(char key);
+
 
 };
 
