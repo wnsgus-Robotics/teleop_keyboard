@@ -2,9 +2,9 @@
 
 InteractionButton::InteractionButton()
 {
-  cancel_publisher = nh.advertise<actionlib_msgs::GoalID>("/move_base/cancel", 1);
-  elevator_door_publisher = nh.advertise<semantic_navigation_msgs::DoorState>("/door_state", 1);
-  opened_elevator_publisher = nh.advertise<std_msgs::String>("/elevator_choose", 1);
+  cancel_publisher = nh.advertise<actionlib_msgs::GoalID>("move_base/cancel", 1);
+  elevator_door_publisher = nh.advertise<semantic_navigation_msgs::DoorState>("door_state", 1);
+  opened_elevator_publisher = nh.advertise<std_msgs::String>("elevator_choose", 1);
 }
 
 InteractionButton::~InteractionButton()
