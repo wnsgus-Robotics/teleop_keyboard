@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include "velocity_profile.h"
+#include "interaction_button.h"
 #include "twist_mux.h"
 #include <stdio.h>
 #include <unistd.h>
@@ -62,6 +63,11 @@ For Holonomic mode (strafing), hold down the shift key:
    J    K    L
    M    <    >
 
+1 : elevator 1
+2 : elevator 2
+3 : door is open
+4 : cancel action
+
 t : up (+z)
 b : down (-z)
 a : auto run
@@ -102,6 +108,7 @@ private:
   int getch();
   VelocityProfile *profile;
   TwistMux *mux;
+  InteractionButton *ib;
 
   void t1Callback(const ros::TimerEvent&);
   void t2Callback(const ros::TimerEvent&);

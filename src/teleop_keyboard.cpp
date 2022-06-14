@@ -9,6 +9,7 @@ TeleopKeyboard::~TeleopKeyboard()
 {
   delete profile;
   delete mux;
+  delete ib;
 }
 
 void TeleopKeyboard::init()
@@ -20,6 +21,7 @@ void TeleopKeyboard::init()
   profile = new VelocityProfile(vacc,wacc);
   if(use_mux)
     mux = new TwistMux(topic_name,sub_topic_name);
+  ib = new InteractionButton();
 }
 
 void TeleopKeyboard::getParam()
@@ -72,7 +74,7 @@ void TeleopKeyboard::t1Callback(const ros::TimerEvent&)
   printf("\rCurrent: speed %f\tturn %f | Awaiting command...\r", speed, turn);
   // Get the pressed key
   key = getch();
-  
+  ib->in(key);
   // If the key corresponds to a key in moveBindings
   if(use_mux)
   {
