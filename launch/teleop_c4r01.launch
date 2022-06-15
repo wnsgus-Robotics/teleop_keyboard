@@ -6,7 +6,7 @@
             <node pkg="teleop_keyboard" type="teleop_keyboard" name="teleop_keyboard" output="screen">
                 <param name="topic_name" value="$(arg joy_vel_topic)" />
                 <param name="sub_topic_name" value="$(arg nav_vel_topic)" />
-                <param name="mux" value="true" />
+                <param name="mux" value="false" />
                 <param name="speed" value="0.1" />
                 <param name="turn" value="0.25" />
                 <param name="vacc" value="0.3" />
